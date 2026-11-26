@@ -1,0 +1,36 @@
+name: Day 2 - Medallion Lakehouse CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  dbt-duckdb-build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt-core & DuckDB dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate Raw Landing Zone (CSV + Parquet)
+        run: python scripts/generate_landing_data.py
+
+      - name: Execute dbt Medallion Build (Bronze -> Silver -> Gold)
+        working-directory: dbt_project
+        run: dbt run --profiles-dir .
+
+      - name: Enforce dbt Data Contracts (PK, FK, Null & Accepted Values)
+        working-directory: dbt_project
+        run: dbt test --profiles-dir .
+
+      - name: Verify Gold Parquet Output Artifact
+        run: |
+          python -c "import duckdb; print(duckdb.sql(\"SELECT * FROM 'lakehouse/gold_customer_revenue.parquet' ORDER BY customer_id\").fetchall())"
