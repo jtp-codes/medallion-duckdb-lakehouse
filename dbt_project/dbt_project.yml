@@ -1,0 +1,22 @@
+name: "medallion_lakehouse"
+version: "1.0.0"
+config-version: 2
+
+profile: "medallion_lakehouse"
+
+model-paths: ["models"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  medallion_lakehouse:
+    bronze:
+      +schema: bronze
+      +materialized: table
+    silver:
+      +schema: silver
+      +materialized: table
+    gold:
+      +schema: gold
+      +materialized: table
