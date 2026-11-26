@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: slv_customers
+    description: "Deduplicated, standardized customer dimension in Silver layer."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - not_null
+      - name: loyalty_tier
+        tests:
+          - accepted_values:
+              values: ["bronze", "silver", "gold"]
+
+  - name: slv_transactions
+    description: "Validated, deduplicated financial transactions in Silver layer."
+    columns:
+      - name: txn_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('slv_customers')
+              field: customer_id
+      - name: amount_usd
+        tests:
+          - not_null
