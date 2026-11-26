@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: gld_customer_revenue_summary
+    description: "Gold-layer customer lifetime revenue mart."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: completed_revenue_usd
+        tests:
+          - not_null
