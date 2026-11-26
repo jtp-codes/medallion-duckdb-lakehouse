@@ -1,0 +1,7 @@
+medallion_lakehouse:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../lakehouse/medallion.duckdb"
+      threads: 4
